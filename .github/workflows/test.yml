@@ -36,11 +36,11 @@ jobs:
   # used by testtar/test9p, for the same reason it is used there: no method name
   # is a substring of another method name or of any arch key in the map.
   testsshfs:
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'sshfs') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'sshfs') }}
     strategy:
       fail-fast: false
       matrix:
-        release: [ "22.04", "24.04", "26.04"
+        release: [ "3.23", "3.24"
 , ""]
         arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386", "loongarch64", "armv7"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
@@ -64,40 +64,48 @@ jobs:
           - runs: "ubuntu-24.04-arm"
             arch: "armv7"
           # Manual matrix excludes only; combos with no conf are auto-excluded.
-          - release: "22.04"
+          - release: "3.23"
+            arch: riscv64
+          - release: "3.23"
             arch: powerpc64
-          - release: "22.04"
+          - release: "3.23"
             arch: sparc64
-          - release: "22.04"
+          - release: "3.23"
+            arch: ppc64le
+          - release: "3.23"
+            arch: s390x
+          - release: "3.23"
             arch: i386
-          - release: "22.04"
+          - release: "3.23"
             arch: loongarch64
-          - release: "22.04"
+          - release: "3.23"
             arch: armv7
-          - release: "24.04"
+          - release: "3.24"
+            arch: riscv64
+          - release: "3.24"
             arch: powerpc64
-          - release: "24.04"
+          - release: "3.24"
             arch: sparc64
-          - release: "24.04"
+          - release: "3.24"
+            arch: ppc64le
+          - release: "3.24"
+            arch: s390x
+          - release: "3.24"
             arch: i386
-          - release: "24.04"
+          - release: "3.24"
             arch: loongarch64
-          - release: "24.04"
+          - release: "3.24"
             arch: armv7
-          - release: "26.04"
-            arch: powerpc64
-          - release: "26.04"
-            arch: sparc64
-          - release: "26.04"
-            arch: i386
-          - release: "26.04"
-            arch: loongarch64
-          - release: "26.04"
-            arch: armv7
+          - release: ""
+            arch: riscv64
           - release: ""
             arch: powerpc64
           - release: ""
             arch: sparc64
+          - release: ""
+            arch: ppc64le
+          - release: ""
+            arch: s390x
           - release: ""
             arch: i386
           - release: ""
@@ -107,7 +115,7 @@ jobs:
 
 
     runs-on: ${{ matrix.runs }}
-    name: sshfs Ubuntu
+    name: sshfs Alpine
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
@@ -116,21 +124,21 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 #    - name: Creating Web console
-#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
 #      uses: vmactions/cf-tunnel@v0
 #      id: tunnel
 #      with:
 #        protocol: http
 #        port: 8000
 
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
         mem: 4096
         release: ${{ matrix.release }}
         arch: ${{ matrix.arch }}
@@ -156,13 +164,12 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
 
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       env:
         VM_USER: ""
       run: |
@@ -171,8 +178,8 @@ jobs:
         [ "$TEST_ENV" = "abc" ]
         ssh -v -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
-      shell: ubuntu {0}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+      shell: alpine {0}
       run: |
         pwd
           pwd
@@ -180,7 +187,6 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
@@ -213,11 +219,11 @@ jobs:
 
   # Two-level sync gating -- see the comment above testsshfs.
   testnfs:
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'nfs') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'nfs') }}
     strategy:
       fail-fast: false
       matrix:
-        release: [ "22.04", "24.04", "26.04"
+        release: [ "3.23", "3.24"
 , ""]
         arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386", "loongarch64", "armv7"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
@@ -241,40 +247,48 @@ jobs:
           - runs: "ubuntu-24.04-arm"
             arch: "armv7"
           # Manual matrix excludes only; combos with no conf are auto-excluded.
-          - release: "22.04"
+          - release: "3.23"
+            arch: riscv64
+          - release: "3.23"
             arch: powerpc64
-          - release: "22.04"
+          - release: "3.23"
             arch: sparc64
-          - release: "22.04"
+          - release: "3.23"
+            arch: ppc64le
+          - release: "3.23"
+            arch: s390x
+          - release: "3.23"
             arch: i386
-          - release: "22.04"
+          - release: "3.23"
             arch: loongarch64
-          - release: "22.04"
+          - release: "3.23"
             arch: armv7
-          - release: "24.04"
+          - release: "3.24"
+            arch: riscv64
+          - release: "3.24"
             arch: powerpc64
-          - release: "24.04"
+          - release: "3.24"
             arch: sparc64
-          - release: "24.04"
+          - release: "3.24"
+            arch: ppc64le
+          - release: "3.24"
+            arch: s390x
+          - release: "3.24"
             arch: i386
-          - release: "24.04"
+          - release: "3.24"
             arch: loongarch64
-          - release: "24.04"
+          - release: "3.24"
             arch: armv7
-          - release: "26.04"
-            arch: powerpc64
-          - release: "26.04"
-            arch: sparc64
-          - release: "26.04"
-            arch: i386
-          - release: "26.04"
-            arch: loongarch64
-          - release: "26.04"
-            arch: armv7
+          - release: ""
+            arch: riscv64
           - release: ""
             arch: powerpc64
           - release: ""
             arch: sparc64
+          - release: ""
+            arch: ppc64le
+          - release: ""
+            arch: s390x
           - release: ""
             arch: i386
           - release: ""
@@ -284,7 +298,7 @@ jobs:
 
 
     runs-on: ${{ matrix.runs }}
-    name: nfs Ubuntu
+    name: nfs Alpine
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
@@ -292,14 +306,14 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
     - uses: actions/checkout@v7
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
         mem: 4096
         release: ${{ matrix.release }}
         arch: ${{ matrix.arch }}
@@ -325,13 +339,12 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
 
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       env:
         VM_USER: ""
       run: |
@@ -343,8 +356,8 @@ jobs:
         [ "$TEST_ENV" = "abc" ]
         ssh -v -p 20022 ${VM_USER:-root}@localhost "uname -a;whoami;pwd"
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
-      shell: ubuntu {0}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
+      shell: alpine {0}
       run: |
         pwd
           pwd
@@ -352,7 +365,6 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
@@ -383,11 +395,11 @@ jobs:
 
   # Two-level sync gating -- see the comment above testsshfs.
   testscp:
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'scp') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'scp') }}
     strategy:
       fail-fast: false
       matrix:
-        release: [ "22.04", "24.04", "26.04"
+        release: [ "3.23", "3.24"
 , ""]
         arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386", "loongarch64", "armv7"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
@@ -411,40 +423,48 @@ jobs:
           - runs: "ubuntu-24.04-arm"
             arch: "armv7"
           # Manual matrix excludes only; combos with no conf are auto-excluded.
-          - release: "22.04"
+          - release: "3.23"
+            arch: riscv64
+          - release: "3.23"
             arch: powerpc64
-          - release: "22.04"
+          - release: "3.23"
             arch: sparc64
-          - release: "22.04"
+          - release: "3.23"
+            arch: ppc64le
+          - release: "3.23"
+            arch: s390x
+          - release: "3.23"
             arch: i386
-          - release: "22.04"
+          - release: "3.23"
             arch: loongarch64
-          - release: "22.04"
+          - release: "3.23"
             arch: armv7
-          - release: "24.04"
+          - release: "3.24"
+            arch: riscv64
+          - release: "3.24"
             arch: powerpc64
-          - release: "24.04"
+          - release: "3.24"
             arch: sparc64
-          - release: "24.04"
+          - release: "3.24"
+            arch: ppc64le
+          - release: "3.24"
+            arch: s390x
+          - release: "3.24"
             arch: i386
-          - release: "24.04"
+          - release: "3.24"
             arch: loongarch64
-          - release: "24.04"
+          - release: "3.24"
             arch: armv7
-          - release: "26.04"
-            arch: powerpc64
-          - release: "26.04"
-            arch: sparc64
-          - release: "26.04"
-            arch: i386
-          - release: "26.04"
-            arch: loongarch64
-          - release: "26.04"
-            arch: armv7
+          - release: ""
+            arch: riscv64
           - release: ""
             arch: powerpc64
           - release: ""
             arch: sparc64
+          - release: ""
+            arch: ppc64le
+          - release: ""
+            arch: s390x
           - release: ""
             arch: i386
           - release: ""
@@ -454,7 +474,7 @@ jobs:
 
 
     runs-on: ${{ matrix.runs }}
-    name: scp Ubuntu
+    name: scp Alpine
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
@@ -463,20 +483,20 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 #    - name: Creating Web console
-#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
+#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
 #      uses: vmactions/cf-tunnel@v0
 #      id: tunnel
 #      with:
 #        protocol: http
 #        port: 8000
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
         mem: 4096
         release: ${{ matrix.release }}
         arch: ${{ matrix.arch }}
@@ -504,13 +524,12 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
 
     - name: Test files
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       env:
         VM_USER: ""
       run: |
@@ -526,17 +545,17 @@ jobs:
     # get no GITHUB_WORKSPACE (SendEnv excluded), so the custom shell does not
     # run in the synced work tree.
     - name: Prepare custom shell sync test file on host
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') && !contains(github.repository, 'haiku') && !contains(github.repository, 'blissos') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') && !contains(github.repository, 'haiku') && !contains(github.repository, 'blissos') }}
       run: |
         echo "host-data" > hostfile.txt
     - name: Test custom shell file sync
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') && !contains(github.repository, 'haiku') && !contains(github.repository, 'blissos') }}
-      shell: ubuntu {0}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') && !contains(github.repository, 'haiku') && !contains(github.repository, 'blissos') }}
+      shell: alpine {0}
       run: |
         [ "$(cat hostfile.txt)" = "host-data" ]
         echo "vm-data" > vmfile.txt
     - name: Verify custom shell copyback on host
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') && !contains(github.repository, 'haiku') && !contains(github.repository, 'blissos') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') && !contains(github.repository, 'haiku') && !contains(github.repository, 'blissos') }}
       run: |
         set -e
         [ "$(cat vmfile.txt)" = "vm-data" ]
@@ -582,9 +601,9 @@ jobs:
     # Repo-level gate, same expression the steps below already use. Without it
     # the guests whose builder does not list tar still spawn this job and green
     # it with every step skipped.
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
     runs-on: ubuntu-24.04
-    name: tar Ubuntu
+    name: tar Alpine
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
@@ -602,10 +621,10 @@ jobs:
           conf
           .github
         sparse-checkout-cone-mode: true
-    - name: Test in Ubuntu
-      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
+    - name: Test in Alpine
+      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         mem: 4096
         debug: true
@@ -613,7 +632,7 @@ jobs:
         run: |
 
     - name: Verify tar copyback on host
-      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
+      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
       run: |
         set -e
         ls -lah "$HOME/work"
@@ -654,9 +673,9 @@ jobs:
   test9p:
     # Repo-level gate -- see testtar. Only the 9p guests have this transport,
     # so on every other repo this job was a green do-nothing.
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
     runs-on: ubuntu-24.04
-    name: 9p Ubuntu
+    name: 9p Alpine
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
@@ -669,10 +688,10 @@ jobs:
           conf
           .github
         sparse-checkout-cone-mode: true
-    - name: Test in Ubuntu
-      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
+    - name: Test in Alpine
+      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         mem: 4096
         debug: true
@@ -680,7 +699,7 @@ jobs:
         run: |
 
     - name: Verify 9P share on host
-      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
+      if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
       run: |
         set -e
         ls -lah "$HOME/work"
@@ -714,11 +733,11 @@ jobs:
   # testcustomshell both exercise the default sync (rsync), so they share the
   # rsync exclude file.
   test:
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'rsync') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'rsync') }}
     strategy:
       fail-fast: false
       matrix:
-        release: [ "22.04", "24.04", "26.04"
+        release: [ "3.23", "3.24"
 , ""]
         arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386", "loongarch64", "armv7"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
@@ -743,40 +762,48 @@ jobs:
           - runs: "ubuntu-24.04-arm"
             arch: "armv7"
           # Manual matrix excludes only; combos with no conf are auto-excluded.
-          - release: "22.04"
+          - release: "3.23"
+            arch: riscv64
+          - release: "3.23"
             arch: powerpc64
-          - release: "22.04"
+          - release: "3.23"
             arch: sparc64
-          - release: "22.04"
+          - release: "3.23"
+            arch: ppc64le
+          - release: "3.23"
+            arch: s390x
+          - release: "3.23"
             arch: i386
-          - release: "22.04"
+          - release: "3.23"
             arch: loongarch64
-          - release: "22.04"
+          - release: "3.23"
             arch: armv7
-          - release: "24.04"
+          - release: "3.24"
+            arch: riscv64
+          - release: "3.24"
             arch: powerpc64
-          - release: "24.04"
+          - release: "3.24"
             arch: sparc64
-          - release: "24.04"
+          - release: "3.24"
+            arch: ppc64le
+          - release: "3.24"
+            arch: s390x
+          - release: "3.24"
             arch: i386
-          - release: "24.04"
+          - release: "3.24"
             arch: loongarch64
-          - release: "24.04"
+          - release: "3.24"
             arch: armv7
-          - release: "26.04"
-            arch: powerpc64
-          - release: "26.04"
-            arch: sparc64
-          - release: "26.04"
-            arch: i386
-          - release: "26.04"
-            arch: loongarch64
-          - release: "26.04"
-            arch: armv7
+          - release: ""
+            arch: riscv64
           - release: ""
             arch: powerpc64
           - release: ""
             arch: sparc64
+          - release: ""
+            arch: ppc64le
+          - release: ""
+            arch: s390x
           - release: ""
             arch: i386
           - release: ""
@@ -787,21 +814,21 @@ jobs:
 
 
     runs-on: ${{ matrix.runs }}
-    name: rsync default Ubuntu
+    name: rsync default Alpine
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
     - uses: actions/checkout@v7
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
         mem: 4096
         release: ${{ matrix.release }}
         arch: ${{ matrix.arch }}
@@ -821,12 +848,11 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       env:
         VM_USER: ""
       run: |
@@ -836,8 +862,8 @@ jobs:
         ssh -v  -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
 
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
-      shell: ubuntu {0}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      shell: alpine {0}
       run: |
         pwd
           pwd
@@ -845,7 +871,6 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
@@ -879,11 +904,11 @@ jobs:
 
   # Two-level sync gating -- see the comment above testsshfs.
   testcustomshell:
-    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}', 'rsync') }}
+    if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'rsync') }}
     strategy:
       fail-fast: false
       matrix:
-        release: [ "22.04", "24.04", "26.04"
+        release: [ "3.23", "3.24"
 , ""]
         arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386", "loongarch64", "armv7"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
@@ -907,40 +932,48 @@ jobs:
           - runs: "ubuntu-24.04-arm"
             arch: "armv7"
           # Manual matrix excludes only; combos with no conf are auto-excluded.
-          - release: "22.04"
+          - release: "3.23"
+            arch: riscv64
+          - release: "3.23"
             arch: powerpc64
-          - release: "22.04"
+          - release: "3.23"
             arch: sparc64
-          - release: "22.04"
+          - release: "3.23"
+            arch: ppc64le
+          - release: "3.23"
+            arch: s390x
+          - release: "3.23"
             arch: i386
-          - release: "22.04"
+          - release: "3.23"
             arch: loongarch64
-          - release: "22.04"
+          - release: "3.23"
             arch: armv7
-          - release: "24.04"
+          - release: "3.24"
+            arch: riscv64
+          - release: "3.24"
             arch: powerpc64
-          - release: "24.04"
+          - release: "3.24"
             arch: sparc64
-          - release: "24.04"
+          - release: "3.24"
+            arch: ppc64le
+          - release: "3.24"
+            arch: s390x
+          - release: "3.24"
             arch: i386
-          - release: "24.04"
+          - release: "3.24"
             arch: loongarch64
-          - release: "24.04"
+          - release: "3.24"
             arch: armv7
-          - release: "26.04"
-            arch: powerpc64
-          - release: "26.04"
-            arch: sparc64
-          - release: "26.04"
-            arch: i386
-          - release: "26.04"
-            arch: loongarch64
-          - release: "26.04"
-            arch: armv7
+          - release: ""
+            arch: riscv64
           - release: ""
             arch: powerpc64
           - release: ""
             arch: sparc64
+          - release: ""
+            arch: ppc64le
+          - release: ""
+            arch: s390x
           - release: ""
             arch: i386
           - release: ""
@@ -951,21 +984,21 @@ jobs:
 
 
     runs-on: ${{ matrix.runs }}
-    name: customshell Ubuntu
+    name: customshell Alpine
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
     - uses: actions/checkout@v7
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
         mem: 4096
         release: ${{ matrix.release }}
         arch: ${{ matrix.arch }}
@@ -985,12 +1018,11 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       env:
         VM_USER: ""
       run: |
@@ -1000,7 +1032,7 @@ jobs:
         ssh -v  -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
 
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       shell: vmsh {0}
       run: |
         pwd
@@ -1009,7 +1041,6 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
@@ -1019,17 +1050,17 @@ jobs:
     # its guest gets no GITHUB_WORKSPACE (SendEnv excluded), so the custom
     # shell does not run in the synced work tree.
     - name: Prepare custom shell sync test file on host
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') && !contains(github.repository, 'haiku') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') && !contains(github.repository, 'haiku') }}
       run: |
         echo "host-data" > hostfile.txt
     - name: Test custom shell file sync
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') && !contains(github.repository, 'haiku') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') && !contains(github.repository, 'haiku') }}
       shell: vmsh {0}
       run: |
         [ "$(cat hostfile.txt)" = "host-data" ]
         echo "vm-data" > vmfile.txt
     - name: Verify custom shell copyback on host
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') && !contains(github.repository, 'haiku') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') && !contains(github.repository, 'haiku') }}
       run: |
         set -e
         [ "$(cat vmfile.txt)" = "vm-data" ]
@@ -1078,22 +1109,22 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: ubuntu-24.04
-    name: cache-after-prepare seed Ubuntu
+    name: cache-after-prepare seed Alpine
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
     - uses: actions/checkout@v7
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         mem: 4096
         debug: true
         debug-on-error: ${{ vars.DEBUG_ON_ERROR }}
         cache-after-prepare: true
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
           echo prepared >> "$HOME/.cache_after_prepare_count"
         run: |
           set -e
@@ -1103,7 +1134,6 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
@@ -1139,24 +1169,24 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: ubuntu-24.04
-    name: cache-after-prepare hit Ubuntu
+    name: cache-after-prepare hit Alpine
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
     - uses: actions/checkout@v7
     # The inputs (notably 'prepare' and the sync method) must be byte-identical
     # to the seed job above: the prepared-image cache key hashes them.
-    - name: Test in Ubuntu
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
+    - name: Test in Alpine
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         mem: 4096
         debug: true
         debug-on-error: ${{ vars.DEBUG_ON_ERROR }}
         cache-after-prepare: true
         prepare: |
-          apt-get install -y socat
+          apk add --no-cache socat
           echo prepared >> "$HOME/.cache_after_prepare_count"
         run: |
           set -e
@@ -1166,7 +1196,6 @@ jobs:
           whoami
           env
           uname -a
-          cat /etc/os-release
           nproc
           echo "OK"
 
@@ -1176,7 +1205,7 @@ jobs:
     # hit-path regression or cross-run cache churn from another ref -- both
     # worth a red job.
     - name: Verify prepare was skipped
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":["rsync","scp","sshfs","nfs","tar"],"s390x":["rsync","scp","sshfs","nfs","tar"],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       run: |
         set -e
         echo "cache-after-prepare-hit=${{ steps.test.outputs.cache-after-prepare-hit }}"
@@ -1213,7 +1242,7 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: ubuntu-24.04
-    name: test default error Ubuntu
+    name: test default error Alpine
     steps:
     # Sparse, like testtar/test9p: this job runs with the repo's DEFAULT sync,
     # which on the agent guests is the tar or 9P channel, and it would
@@ -1225,10 +1254,10 @@ jobs:
           conf
           .github
         sparse-checkout-cone-mode: true
-    - name: Test in Ubuntu
+    - name: Test in Alpine
       id: testerr
       continue-on-error: true
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         debug: true
         # A command that EXISTS and fails, rather than `false` or a made-up
@@ -1258,7 +1287,7 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: ubuntu-24.04
-    name: test default success Ubuntu
+    name: test default success Alpine
     steps:
     # Sparse, same reason as testerr above -- and this is the job the full
     # payload actually broke: the ReactOS push spent 12 minutes on those
@@ -1271,10 +1300,10 @@ jobs:
           conf
           .github
         sparse-checkout-cone-mode: true
-    - name: Test in Ubuntu
+    - name: Test in Alpine
       id: testpass
       continue-on-error: true
-      uses: vmactions/ubuntu-vm@9ef3ad93ca50756695c416ce9b512b016f148d96
+      uses: vmactions/alpine-vm@44bfc7948cbde57bf4336e3ac5d24166680cbffb
       with:
         debug: true
         # No `true` and no double quotes: this body runs on every guest, and
