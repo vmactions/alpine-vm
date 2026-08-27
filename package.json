@@ -1,6 +1,6 @@
 {
   "name": "vmactions-Alpine",
-  "version": "",
+  "version": "1.0.0",
   "description": "GitHub actions for Alpine",
   "type": "module",
   "main": "index.js",
