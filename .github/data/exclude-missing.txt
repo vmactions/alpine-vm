@@ -15,8 +15,6 @@
           - release: "3.23"
             arch: armv7
           - release: "3.24"
-            arch: riscv64
-          - release: "3.24"
             arch: powerpc64
           - release: "3.24"
             arch: sparc64
@@ -30,8 +28,6 @@
             arch: loongarch64
           - release: "3.24"
             arch: armv7
-          - release: ""
-            arch: riscv64
           - release: ""
             arch: powerpc64
           - release: ""
