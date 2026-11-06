@@ -121,7 +121,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -283,7 +283,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -508,7 +508,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -640,7 +640,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         mem: 4096
         debug: true
@@ -707,7 +707,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         mem: 4096
         debug: true
@@ -821,7 +821,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -916,7 +916,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         prepare: |
           apk add --no-cache socat
@@ -1016,7 +1016,7 @@ jobs:
         sparse-checkout-cone-mode: true
     - name: Test in Alpine
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         arch: ${{ matrix.arch }}
         debug: true
@@ -1064,7 +1064,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -1185,7 +1185,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         mem: 4096
         debug: true
@@ -1247,7 +1247,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         mem: 4096
         debug: true
@@ -1327,7 +1327,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         mem: 4096
         debug: true
@@ -1388,7 +1388,7 @@ jobs:
     - name: Test in Alpine
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":["rsync","scp","sshfs","nfs","tar"],"riscv64":["rsync","scp","sshfs","nfs","tar"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         mem: 4096
         debug: true
@@ -1462,7 +1462,7 @@ jobs:
     - name: Test in Alpine
       id: testerr
       continue-on-error: true
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         debug: true
         # A command that EXISTS and fails, rather than `false` or a made-up
@@ -1508,7 +1508,7 @@ jobs:
     - name: Test in Alpine
       id: testpass
       continue-on-error: true
-      uses: vmactions/alpine-vm@40c390478830ae15fd5762d1da04b70f91266500
+      uses: vmactions/alpine-vm@505612547e19e5cb2217ec596d01fa007fc653f9
       with:
         debug: true
         # No `true` and no double quotes: this body runs on every guest, and
